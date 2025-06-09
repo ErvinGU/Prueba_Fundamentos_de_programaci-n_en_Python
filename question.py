@@ -1,42 +1,20 @@
-import preguntas as p
+
 import random
 from shuffle import shuffle_alt
-
-# Opciones dadas para escoger.
-###############################################
-opciones = {'basicas': [1,2,3],
-            'intermedias': [1,2,3],
-            'avanzadas': [1,2,3]}
-###############################################
+from preguntas import pool_preguntas
 
 def choose_q(dificultad):
-    #escoger preguntas por dificultad
-    preguntas = 
-    
-    # usar opciones desde ambiente global
-    global 
-    # escoger una pregunta
-    n_elegido = 
-    # eliminarla del ambiente global para no escogerla de nuevo
-    
-    
-    # escoger enunciado y alternativas mezcladas
-    pregunta = 
-    alternativas = 
-    
-    
-    return pregunta['enunciado'], alternativas
+    if dificultad not in pool_preguntas:
+        raise ValueError("Nivel de dificultad inválido")
 
-if __name__ == '__main__':
-    # si ejecuto el programa, las preguntas cambian de orden, pero nunca debieran repetirse
-    pregunta, alternativas = choose_q('basicas')
-    print(f'El enunciado es: {pregunta}')
-    print(f'Las alternativas son: {alternativas}')
-    
-    pregunta, alternativas = choose_q('basicas')
-    print(f'El enunciado es: {pregunta}')
-    print(f'Las alternativas son: {alternativas}')
-    
-    pregunta, alternativas = choose_q('basicas')
-    print(f'El enunciado es: {pregunta}')
-    print(f'Las alternativas son: {alternativas}')
+    preguntas_disponibles = pool_preguntas[dificultad]
+    if not preguntas_disponibles:
+        raise ValueError("No quedan preguntas disponibles en este nivel")
+
+    pregunta_n = random.choice(list(preguntas_disponibles.keys()))
+    pregunta_seleccionada = preguntas_disponibles.pop(pregunta_n)
+
+    enunciado = pregunta_seleccionada["enunciado"]
+    alternativas_mezcladas = shuffle_alt(pregunta_seleccionada)
+
+    return enunciado, alternativas_mezcladas

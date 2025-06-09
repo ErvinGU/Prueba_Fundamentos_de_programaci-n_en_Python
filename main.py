@@ -1,86 +1,50 @@
 
-# No modificar
-from verify import verificar
-import preguntas as p
-from question import choose_q
-from print_preguntas import print_pregunta
-from level import choose_level
 from validador import validate
-import time
-import os
-import sys
+from level import choose_level
+from question import choose_q
+from shuffle import shuffle_alt
+from print_preguntas import print_pregunta
+from verify import verificar
+from preguntas import pool_preguntas
 
-# valores iniciales - 
-n_pregunta = 0
-continuar = 'y'
-correcto = True
-p_level = 10
-op_sys = 'cls' if sys.platform == 'win32' else 'clear'
-
-
-# ----------------------------------------
-
-os.system(op_sys) # limpiar pantalla
-
-print('Bienvenido a la Trivia')
-opcion = input('''Ingrese una opción para Jugar!
-        1. Jugar
-        0. Salir
-        
-    > ''')
-# 1. validar opcion
-opcion = 
-
-# 2. Definir el comportamiento de Salir
-if opcion == '0':
-    print()
-    time.sleep(2)
-    os.system(op_sys)
-    # finalizar programa
+def main():
+    print("Bienvenido a la trivia interactiva")
     
+    inicio = validate(["1", "0"], input("Presione 1 para comenzar o 0 para salir: ").strip())
+    if inicio == "0":
+        print("Nos vemos pronto!")
+        return
 
-# Funcionamiento de preguntas
-while correcto and n_pregunta < 3*p_level:
-    
-    if n_pregunta == 0:
-        p_level = input('¿Cuántas preguntas por nivel? (Máximo 3): ')
-        # 3. Validar el número de preguntas por nivel
-        p_level = 
-        
-    if continuar == 'y':
-        #contador de preguntas
-        n_pregunta += 1
-        # 4. Escoger el nivel de la pregunta
-        nivel = 
-        print(f'Pregunta {n_pregunta}:')
-        # 5. Escoger el enunciado y las alternativas de una pregunta según el nivel escogido
-        enunciado, alternativas = 
-        #6. Imprimir el enunciado y sus alternativas en pantalla
-        
-        
-        respuesta = input('Escoja la alternativa correcta:\n> ').lower()
-        # 7. Validar la respuesta entregada
-        respuesta = 
-        # 8. Verificar si la respuesta es correcta o no
-        correcto = 
-        
-        if correcto and n_pregunta < 3*p_level:
-            print('Muy bien sigue así!')
-            continuar = input('Desea continuar? [y/n]: ').lower()
-            #9. Validar si es que se responde y o n
-            continuar = 
-            os.system(op_sys)
-        elif correcto and n_pregunta == 3*p_level:
-            print(f'Felicitaciones, Has respondido {3*p_level} preguntas correctas. \n Has ganado la Trivia \n Gracias por Jugar, hasta luego!!!')
-            time.sleep(3)
-            os.system(op_sys)
-        else: 
-            print(f'Lo siento, conseguiste {n_pregunta - 1} respuestas correctas,\n Sigue participando!!')
-            time.sleep(3)
-            exit()
-    else: 
-        print('Nos vemos la proxima vez, sigue practicando')
-        time.sleep(3)
-        exit()
-            
+    preguntas_por_nivel = int(validate(["1", "2", "3"], input("Ingrese la cantidad de preguntas por nivel (1, 2 o 3): ").strip()))
+    puntaje = 0
+
+    for n_pregunta in range(1, preguntas_por_nivel * 3 + 1):
+        nivel = choose_level(n_pregunta, preguntas_por_nivel)
+
+        if not pool_preguntas[nivel]:
+            print(f"No quedan más preguntas en el nivel {nivel}.")
+            continue
+
+        enunciado, alternativas = choose_q(nivel)
+
+        alternativas_mezcladas = shuffle_alt({"alternativas": alternativas})
+        print_pregunta(enunciado, alternativas_mezcladas)
+
+        eleccion_usuario = validate(["A", "B", "C", "D"], input("Seleccione una opción (A, B, C, D): ").strip().upper())
+
+        if verificar(alternativas_mezcladas, eleccion_usuario):
+            puntaje += 1
+
+    print(f"\nTrivia finalizada. Puntaje: {puntaje}/{preguntas_por_nivel * 3}")
+
+    continuar = validate(["1", "0"], input("\n¿Quieres jugar otra vez? (1: Sí, 0: No): ").strip())
+    if continuar == "1":
+        main()
+    else:
+        print("Gracias por jugar. ¡Hasta la próxima!")
+
+if __name__ == "__main__":
+    main()
+
+
             
